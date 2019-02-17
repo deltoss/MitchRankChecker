@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.168
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MitchRankChecker.RankCheckerTest", "MitchRankChecker.RankCheckerTest\MitchRankChecker.RankCheckerTest.csproj", "{87F021FA-78D2-4A71-B654-F3E2B17B3E78}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MitchRankChecker.Model", "MitchRankChecker.Model\MitchRankChecker.Model.csproj", "{4061C672-B84C-46C2-8DC2-3508EC1EC0F6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MitchRankChecker.EntityFramework", "MitchRankChecker.EntityFramework\MitchRankChecker.EntityFramework.csproj", "{5BA12586-3F9A-43A3-93D2-5AFA561BFC2D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MitchRankChecker.WebApi", "MitchRankChecker.WebApi\MitchRankChecker.WebApi.csproj", "{5CB59178-2238-4FAE-B79A-C4BFF5B95F41}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MitchRankChecker.RankChecker", "MitchRankChecker.RankChecker\MitchRankChecker.RankChecker.csproj", "{2002C651-1F9D-4237-A8F8-42B6CFFC9DF9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MitchRankChecker.Mvc", "MitchRankChecker.Mvc\MitchRankChecker.Mvc.csproj", "{81120BA1-08B5-496B-9CE5-1304CF835B6D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{87F021FA-78D2-4A71-B654-F3E2B17B3E78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87F021FA-78D2-4A71-B654-F3E2B17B3E78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87F021FA-78D2-4A71-B654-F3E2B17B3E78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87F021FA-78D2-4A71-B654-F3E2B17B3E78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4061C672-B84C-46C2-8DC2-3508EC1EC0F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4061C672-B84C-46C2-8DC2-3508EC1EC0F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4061C672-B84C-46C2-8DC2-3508EC1EC0F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4061C672-B84C-46C2-8DC2-3508EC1EC0F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BA12586-3F9A-43A3-93D2-5AFA561BFC2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BA12586-3F9A-43A3-93D2-5AFA561BFC2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BA12586-3F9A-43A3-93D2-5AFA561BFC2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BA12586-3F9A-43A3-93D2-5AFA561BFC2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CB59178-2238-4FAE-B79A-C4BFF5B95F41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CB59178-2238-4FAE-B79A-C4BFF5B95F41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CB59178-2238-4FAE-B79A-C4BFF5B95F41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CB59178-2238-4FAE-B79A-C4BFF5B95F41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2002C651-1F9D-4237-A8F8-42B6CFFC9DF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2002C651-1F9D-4237-A8F8-42B6CFFC9DF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2002C651-1F9D-4237-A8F8-42B6CFFC9DF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2002C651-1F9D-4237-A8F8-42B6CFFC9DF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81120BA1-08B5-496B-9CE5-1304CF835B6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81120BA1-08B5-496B-9CE5-1304CF835B6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81120BA1-08B5-496B-9CE5-1304CF835B6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81120BA1-08B5-496B-9CE5-1304CF835B6D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1A5E93F8-9D8D-4281-936A-1364CB551BFD}
+	EndGlobalSection
+EndGlobal

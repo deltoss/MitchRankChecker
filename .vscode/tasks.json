@@ -1,0 +1,35 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "buildwebapi",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/Solution/MitchRankChecker.WebApi/MitchRankChecker.WebApi.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "buildmvc",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/Solution/MitchRankChecker.Mvc/MitchRankChecker.Mvc.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "buildtest",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/Solution/MitchRankChecker.RankCheckerTest/MitchRankChecker.RankCheckerTest.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}
