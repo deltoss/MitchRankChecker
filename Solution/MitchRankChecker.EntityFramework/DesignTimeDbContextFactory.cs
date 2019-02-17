@@ -25,7 +25,7 @@ namespace MitchRankChecker.EntityFramework
     {
         public RankCheckerDbContext CreateDbContext(string[] args)
         {
-            var connectionString = "Data Source=../MitchRankChecker.WebApi/data/RankChecker.sqlite";
+            var connectionString = "Data Source=./RankChecker.sqlite";
 
             var builder = new DbContextOptionsBuilder<RankCheckerDbContext>();
 

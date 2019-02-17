@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace MitchRankChecker.Model.Enumerations
 {
     /// <summary>
@@ -5,6 +7,7 @@ namespace MitchRankChecker.Model.Enumerations
     /// the status of the rank check
     /// process.
     /// </summary>
+    [NotMapped]
     public class RankCheckRequestStatus : Enumeration
     {
         #region Constructors

@@ -1,8 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,8 +16,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HostedServiceBackgroundTasks\HostedServiceBackgroundTasks.csproj" />
     <ProjectReference Include="..\MitchRankChecker.EntityFramework\MitchRankChecker.EntityFramework.csproj" />
     <ProjectReference Include="..\MitchRankChecker.Model\MitchRankChecker.Model.csproj" />
+    <ProjectReference Include="..\MitchRankChecker.RankChecker\MitchRankChecker.RankChecker.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

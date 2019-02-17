@@ -1,0 +1,150 @@
+﻿@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
+@{
+    ViewData["Title"] = "Request Rank Check";
+}
+
+<script>
+    function objectifyForm(formArray) {//serialize data function
+
+        var returnArray = {};
+        for (var i = 0; i < formArray.length; i++) {
+            returnArray[formArray[i]['name']] = formArray[i]['value'];
+        }
+        return returnArray;
+    }
+
+    function submitForm(event, element) {
+        $form = $(element).closest('form');
+        var form = $form[0];
+
+        var formValid = checkFormValidity(form);
+        if (formValid === false) {
+            event.preventDefault();
+            event.stopPropagation();
+            return;
+        }
+
+        //form encoded data
+        var dataType = 'application/x-www-form-urlencoded; charset=utf-8';
+        var data = $form.serializeArray();
+        var jsonData = objectifyForm(data);
+
+        // ToDo Ajax request
+        var apiUrl = "@Configuration.GetSection("RankCheckerApi")["url"]/RankCheckRequests";
+        var ajaxPromise = $.ajax({
+            type: "POST",
+            url: apiUrl,
+            data: data,
+            data: JSON.stringify(jsonData),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json'
+        });
+
+        ajaxPromise.then(function () {
+            window.location.href = '@(Url.Action("Index", "RankCheckRequests"))';
+        }).fail(function (response) {
+            debugger;
+            if (response.responseJSON && response.responseJSON.errors) {
+                var errors = response.responseJSON.errors;
+                for (var key in errors) {
+                    if (errors.hasOwnProperty(key)) {
+                        var erroredField = $form.find("[name=" + key + "]")[0];
+                        var errorMessage = errors[key];
+                        setFieldError(erroredField, errorMessage);
+                    }
+                }
+            }
+            else
+                $form.find("> .text-danger").text("Not able to reach the Web API.").fadeIn();
+        });
+    }
+
+    function setFieldError(erroredField, errorMessage) {
+        erroredField.setCustomValidity(errorMessage);
+        $(erroredField).siblings('.text-danger').text(errorMessage);
+    }
+
+    function checkFormValidity(form) {
+        var $form = $(form);
+        // Simple quick client-side validation
+        var failedClientValidation = false;
+
+        var maximumRecords = document.getElementById('MaximumRecords');
+        var $maximumRecords = $(maximumRecords);
+        if (!$maximumRecords.val() || isNaN($maximumRecords.val())) {
+            setFieldError(maximumRecords, "Maximum records must be a valid number.");
+            failedClientValidation = true;
+        }
+
+        var termToSearch = document.getElementById('TermToSearch');
+        var $termToSearch = $(termToSearch);
+        if (!$termToSearch.val()) {
+            setFieldError(termToSearch, "Must provide a term to search for.");
+            failedClientValidation = true;
+        }
+
+        var websiteUrl = document.getElementById('WebsiteUrl');
+        var $websiteUrl = $(websiteUrl);
+        if (!$websiteUrl.val()) {
+            setFieldError(websiteUrl, "Must provide a term to search for.");
+            failedClientValidation = true;
+        }
+
+        $form.addClass("was-validated");
+
+        return !failedClientValidation;
+    }
+</script>
+
+<div class="card">
+    <div class="card-body">
+        <div class="text-center">
+            <h1 class="display-4">Rank Check Request</h1>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <form class="needs-validation" novalidate>
+                    <div class="alert alert-danger text-danger" style="display: none;"></div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="SearchUrl" class="control-label"><i class="fa-fw fas fa-search"></i> Search Engine</label>
+                            <select data-select2 id="SearchUrl" name="SearchUrl" class="form-control">
+                                <option value="https://www.google.com/search">Google</option>
+                                <option value="https://www.bing.com/search">Bing</option>
+                                <option value="https://au.search.yahoo.com/search">Yahoo</option>
+                            </select>
+                            <span class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="MaximumRecords" class="control-label"><i class="fa-fw fas fa-clipboard-list"></i> Maximum Records</label>
+                            <input id="MaximumRecords" name="MaximumRecords" class="form-control" type="number" value="100" />
+                            <small class="form-text text-muted">The first N number of records to check for</small>
+                            <span class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="TermToSearch" class="control-label"><i class="fa-fw fas fa-key"></i> Term to Search</label>
+                            <input id="TermToSearch" name="TermToSearch" class="form-control" />
+                            <span class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="WebsiteUrl" class="control-label"><i class="fa-fw fas fa-globe"></i> Website Url</label>
+                            <input id="WebsiteUrl" name="WebsiteUrl" class="form-control" />
+                            <span class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <a href="@(Url.Action("Index", "RankCheckRequests"))" class="btn btn-primary">
+                                <i class="fas fa-plus-circle"></i> Back
+                            </a>
+                            <button type="button" onclick="submitForm(event, this)" class="btn btn-success">
+                                <i class="fas fa-plus-circle"></i> Create
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

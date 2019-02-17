@@ -59,7 +59,12 @@ namespace MitchRankChecker.Model
                     StatusId = value.Id;
             }
         }
-        
+
+        /// <summary>
+        /// <para>The error message.</para>
+        /// </summary>
+        public string ErrorMessage { get; set; }
+
         /// <summary>
         /// <para>The term to search</para>
         /// </summary>
@@ -70,7 +75,6 @@ namespace MitchRankChecker.Model
         /// <para>The Website URL to check rankings for.</para>
         /// </summary>
         [Required]
-        [Url]
         public string WebsiteUrl { get; set; }
 
         /// <summary>

@@ -14,6 +14,7 @@ Inside the `Solution` folder is the various projects, and a solution file to ope
 | MitchRankChecker.RankChecker | A `standard class library` that does the actual rank checks. | To keep it decoupled from a single application, it was designed as its own separate class library project. |
 | MitchRankChecker.RankCheckerTest | Automated tests for the rank checker classes. | Simple levels of automated unit tests reduces bugs resulting from regression. |
 | MitchRankChecker.WebApi | The Web API web application to manipulate and return data from the database. | Web API is cross-platform, meaning a mobile app, desktop app, etc can use the Web API, not just the web application. |
+| HostedServiceBackgroundTasks | Used to run background services. Useful to queue and run rank check processes which a single process can take over 10 seconds. | DotNet core 3.0 is expected to have queued hosted services built in. However the current solution for dotnet core 2.X is create your own set of classes as detailed in this [MSDN article](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services?view=aspnetcore-2.2). Hence this project. |
 
 The `.vscode` folder comes with pre-configured files to debug the applications using **Visual Studio Code**.
 
@@ -247,7 +248,7 @@ Although popular, the controversial `Repository` pattern was not applied, for be
 
 * The rank checking does not count ads search results. They appear on every page, and thus isn't feasible to be included as part of the rank checking process.
     * It's possible to implement a RankChecker that does a rank check with ads search results only.
-* A real-time processing framework (e.g. `Signal R`) can be used to alert a user when their background job is finished, instead of having to refresh the page or data grid.
+* A real-time processing framework (e.g. `SignalR`) can be used to alert a user when their background job is finished, instead of having to refresh the page or data grid.
 * Due to time constraints:
     * A logging library isn't included.
     * The fundamental concept of `HATEOAS` wasn't implemented for the API.

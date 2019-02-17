@@ -9,26 +9,14 @@ using MitchRankChecker.EntityFramework;
 namespace MitchRankChecker.EntityFramework.Migrations
 {
     [DbContext(typeof(RankCheckerDbContext))]
-    [Migration("20190216232940_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20190217135753_initialMigration")]
+    partial class initialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.2.2-servicing-10034");
-
-            modelBuilder.Entity("MitchRankChecker.Model.Enumerations.RankCheckRequestStatus", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Name");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("RankCheckRequestStatus");
-                });
 
             modelBuilder.Entity("MitchRankChecker.Model.RankCheckRequest", b =>
                 {
@@ -37,6 +25,8 @@ namespace MitchRankChecker.EntityFramework.Migrations
 
                     b.Property<DateTime?>("CreatedAt")
                         .IsConcurrencyToken();
+
+                    b.Property<string>("ErrorMessage");
 
                     b.Property<DateTime?>("LastUpdatedAt")
                         .IsConcurrencyToken();
@@ -55,8 +45,6 @@ namespace MitchRankChecker.EntityFramework.Migrations
                         .IsRequired();
 
                     b.HasKey("Id");
-
-                    b.HasIndex("StatusId");
 
                     b.ToTable("RankCheckRequests");
                 });
@@ -84,14 +72,6 @@ namespace MitchRankChecker.EntityFramework.Migrations
                     b.HasIndex("RankCheckRequestId");
 
                     b.ToTable("SearchEntries");
-                });
-
-            modelBuilder.Entity("MitchRankChecker.Model.RankCheckRequest", b =>
-                {
-                    b.HasOne("MitchRankChecker.Model.Enumerations.RankCheckRequestStatus", "Status")
-                        .WithMany()
-                        .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("MitchRankChecker.Model.SearchEntry", b =>

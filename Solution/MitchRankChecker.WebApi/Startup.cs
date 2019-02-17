@@ -16,6 +16,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using MitchRankChecker.EntityFramework;
 using Swashbuckle.AspNetCore.Swagger;
+using HostedServiceBackgroundTasks;
 
 namespace MitchRankChecker.WebApi
 {
@@ -32,11 +33,11 @@ namespace MitchRankChecker.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            services.AddCors();
-
             string connection = this.Configuration.GetConnectionString("RankCheckerDatabase");
             services.AddDbContext<RankCheckerDbContext>(options => options.UseSqlite(connection));
+
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddCors();
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
@@ -53,6 +54,9 @@ namespace MitchRankChecker.WebApi
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
+
+            services.AddHostedService<QueuedHostedService>();
+            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HostedServiceBackgroundTasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MitchRankChecker.EntityFramework;
 using MitchRankChecker.Model;
 using MitchRankChecker.Model.Enumerations;
+using MitchRankChecker.RankChecker.Factories;
+using MitchRankChecker.RankChecker.Interfaces;
 
 namespace MitchRankChecker.WebApi.Controllers
 {
@@ -26,12 +29,18 @@ namespace MitchRankChecker.WebApi.Controllers
         private readonly RankCheckerDbContext _context;
 
         /// <summary>
+        /// The queue to assign background services into.
+        /// </summary>
+        private IBackgroundTaskQueue _queue;
+
+        /// <summary>
         /// Constructor that instantiates a new controller.
         /// </summary>
         /// <param name="context">The Entity framework database context.</param>
-        public RankCheckRequestsController(RankCheckerDbContext context)
+        public RankCheckRequestsController(RankCheckerDbContext context, IBackgroundTaskQueue queue)
         {
             _context = context;
+            _queue = queue;
         }
 
         /// <summary>
@@ -94,22 +103,49 @@ namespace MitchRankChecker.WebApi.Controllers
         ///        "TermToSearch": "Online Title Search",
         ///        "WebsiteUrl": "www.infotrack.com.au",
         ///     }
-        /// <br /> 
-        /// Status Id can be:
-        /// * 0 - Unspecified
-        /// * 1 - InQueue
-        /// * 2 - InProgress
-        /// * 3 - Completed
-        /// * 4 - Error
-        ///
+        /// <br />
         /// </remarks>
         /// <returns>A newly created RankCheckRequest object</returns>
         /// <response code="201">The item created</response>
         [HttpPost]
         public async Task<ActionResult<RankCheckRequest>> PostRankCheckRequest(RankCheckRequest rankCheckRequest)
         {
+            rankCheckRequest.Status = RankCheckRequestStatus.InQueue;
             _context.RankCheckRequests.Add(rankCheckRequest);
             await _context.SaveChangesAsync();
+
+            _queue.QueueBackgroundWorkItem(async token =>
+            {
+                RankCheckRequest updatedRankCheckRequest;
+                updatedRankCheckRequest = await _context.RankCheckRequests.Where(x => x.Id == rankCheckRequest.Id).FirstAsync();
+                updatedRankCheckRequest.Status = RankCheckRequestStatus.InProgress;
+                _context.Attach(updatedRankCheckRequest);
+                _context.Entry(updatedRankCheckRequest).Property(x => x.StatusId).IsModified = true; // Mark the specific field as modified to only update that field
+                await _context.SaveChangesAsync();
+                try
+                {
+                    var scrapingRankCheckerFactory = new ScrapingRankCheckerFactory();
+                    IRankChecker rankChecker = scrapingRankCheckerFactory.CreateRankChecker(updatedRankCheckRequest);
+                    List<SearchEntry> relevantSearchEntries = await rankChecker.ExtractRankEntriesAsync();
+                    if (relevantSearchEntries != null && relevantSearchEntries.Count > 0)
+                        await _context.SearchEntries.AddRangeAsync(relevantSearchEntries);
+
+                    updatedRankCheckRequest.Status = RankCheckRequestStatus.Completed;
+                    _context.Attach(updatedRankCheckRequest);
+                    _context.Entry(updatedRankCheckRequest).Property(x => x.StatusId).IsModified = true;
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    updatedRankCheckRequest.Status = RankCheckRequestStatus.Error;
+                    updatedRankCheckRequest.ErrorMessage = ex.Message;
+                    _context.Attach(updatedRankCheckRequest);
+                    _context.Entry(updatedRankCheckRequest).Property(x => x.StatusId).IsModified = true;
+                    _context.Entry(updatedRankCheckRequest).Property(x => x.ErrorMessage).IsModified = true;
+                    await _context.SaveChangesAsync();
+                }
+                
+            });
 
             return CreatedAtAction("GetRankCheckRequest", new { id = rankCheckRequest.Id }, rankCheckRequest);
         }

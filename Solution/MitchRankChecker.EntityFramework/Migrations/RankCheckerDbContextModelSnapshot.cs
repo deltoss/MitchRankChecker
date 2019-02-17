@@ -16,18 +16,6 @@ namespace MitchRankChecker.EntityFramework.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.2.2-servicing-10034");
 
-            modelBuilder.Entity("MitchRankChecker.Model.Enumerations.RankCheckRequestStatus", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Name");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("RankCheckRequestStatus");
-                });
-
             modelBuilder.Entity("MitchRankChecker.Model.RankCheckRequest", b =>
                 {
                     b.Property<int>("Id")
@@ -35,6 +23,8 @@ namespace MitchRankChecker.EntityFramework.Migrations
 
                     b.Property<DateTime?>("CreatedAt")
                         .IsConcurrencyToken();
+
+                    b.Property<string>("ErrorMessage");
 
                     b.Property<DateTime?>("LastUpdatedAt")
                         .IsConcurrencyToken();
@@ -53,8 +43,6 @@ namespace MitchRankChecker.EntityFramework.Migrations
                         .IsRequired();
 
                     b.HasKey("Id");
-
-                    b.HasIndex("StatusId");
 
                     b.ToTable("RankCheckRequests");
                 });
@@ -82,14 +70,6 @@ namespace MitchRankChecker.EntityFramework.Migrations
                     b.HasIndex("RankCheckRequestId");
 
                     b.ToTable("SearchEntries");
-                });
-
-            modelBuilder.Entity("MitchRankChecker.Model.RankCheckRequest", b =>
-                {
-                    b.HasOne("MitchRankChecker.Model.Enumerations.RankCheckRequestStatus", "Status")
-                        .WithMany()
-                        .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("MitchRankChecker.Model.SearchEntry", b =>

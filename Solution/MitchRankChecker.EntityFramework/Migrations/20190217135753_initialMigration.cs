@@ -3,23 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace MitchRankChecker.EntityFramework.Migrations
 {
-    public partial class InitialMigration : Migration
+    public partial class initialMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "RankCheckRequestStatus",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RankCheckRequestStatus", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "RankCheckRequests",
                 columns: table => new
@@ -29,6 +16,7 @@ namespace MitchRankChecker.EntityFramework.Migrations
                     SearchUrl = table.Column<string>(nullable: false),
                     MaximumRecords = table.Column<int>(nullable: false),
                     StatusId = table.Column<int>(nullable: false),
+                    ErrorMessage = table.Column<string>(nullable: true),
                     TermToSearch = table.Column<string>(nullable: false),
                     WebsiteUrl = table.Column<string>(nullable: false),
                     CreatedAt = table.Column<DateTime>(nullable: true),
@@ -37,12 +25,6 @@ namespace MitchRankChecker.EntityFramework.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_RankCheckRequests", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_RankCheckRequests_RankCheckRequestStatus_StatusId",
-                        column: x => x.StatusId,
-                        principalTable: "RankCheckRequestStatus",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -69,11 +51,6 @@ namespace MitchRankChecker.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_RankCheckRequests_StatusId",
-                table: "RankCheckRequests",
-                column: "StatusId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_SearchEntries_RankCheckRequestId",
                 table: "SearchEntries",
                 column: "RankCheckRequestId");
@@ -86,9 +63,6 @@ namespace MitchRankChecker.EntityFramework.Migrations
 
             migrationBuilder.DropTable(
                 name: "RankCheckRequests");
-
-            migrationBuilder.DropTable(
-                name: "RankCheckRequestStatus");
         }
     }
 }
