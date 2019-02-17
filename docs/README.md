@@ -2,18 +2,6 @@
 [![made-with-docsify](https://img.shields.io/badge/Made%20with-Docsify-green.svg)](https://docsify.js.org/)
 [![made-with-dotnet-core](https://img.shields.io/badge/Made%20with-DotNet%20Core%202.2-blue.svg)](https://shields.io)
 
-# Notes and Further Work
-
-* The rank checking does not count ads search results. They appear on every page, and thus isn't feasible to be included as part of the rank checking process.
-    * It's possible to implement a RankChecker that does a rank check with ads search results only.
-* A real-time processing framework (e.g. `Signal R`) can be used to alert a user when their background job is finished, instead of having to refresh the page or data grid.
-* Due to time constraints:
-    * A logging library isn't included.
-    * The fundamental concept of `HATEOAS` wasn't implemented for the API.
-    * Authentication and authorisation wasn't implemented, due to the amount of effort to implement a proper authentication system that allows for managing users, roles, permissions, and/or claims.
-    * No complicated NPM and Webpack installation. Instead, used `LibMan`, which is Microsofts package manager. Easier to setup, but for complicated use cases, NPM and webpack is the better approach.
-    * Client-side framework (i.e. VueJS, react, Angular) was not used, as it'd also require NPM and webpack for an optimal set up, taking time.
-
 # Project Structure
 
 Inside the `Solution` folder is the various projects, and a solution file to open those projects for Visual Studio. Below table describes each project and their purpose:
@@ -245,3 +233,15 @@ Although popular, the controversial `Repository` pattern was not applied, for be
 * Entity Framework concept of `DbSets` overlaps with the pattern on a large basis.
 * Popularised from the concept of **DDD (Domain Driven Design)**. DDD is a good approach for complex domain issues, however this project domain logic is quite simple, and doesn't warrant using the DDD approach.
 * Additional effort required.
+
+# Notes and Further Work
+
+* The rank checking does not count ads search results. They appear on every page, and thus isn't feasible to be included as part of the rank checking process.
+    * It's possible to implement a RankChecker that does a rank check with ads search results only.
+* A real-time processing framework (e.g. `Signal R`) can be used to alert a user when their background job is finished, instead of having to refresh the page or data grid.
+* Due to time constraints:
+    * A logging library isn't included.
+    * The fundamental concept of `HATEOAS` wasn't implemented for the API.
+    * Authentication and authorisation wasn't implemented, due to the amount of effort to implement a proper authentication system that allows for managing users, roles, permissions, and/or claims.
+    * No complicated NPM and Webpack installation. Instead, used `LibMan`, which is Microsofts package manager. Easier to setup, but for complicated use cases, NPM and webpack is the better approach.
+    * Client-side framework (i.e. VueJS, react, Angular) was not used, as it'd also require NPM and webpack for an optimal set up, taking time.

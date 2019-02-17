@@ -27,4 +27,4 @@ For cross-platform compatibility, this application was developed using the `DotN
 
 # Documentation
 
-The full documentation can be viewed on the [GitHub pages](https://deltoss.github.io/mitchrankchecker/).
+The full documentation can be viewed on the [GitHub pages](https://deltoss.github.io/MitchRankChecker/).
