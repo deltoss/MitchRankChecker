@@ -85,14 +85,6 @@ namespace MitchRankChecker.RankChecker.RankCheckers
         #endregion
 
         /// <summary>
-        /// Checks for the passed search entry node
-        /// for whether it should have its search
-        /// rank recorded or not.
-        /// </summary>
-        /// <returns>Boolean whether the particular search entry node should have its rank recorded.</returns>
-        protected abstract bool ShouldRecordRank(HtmlNode searchEntryElement);
-
-        /// <summary>
         /// Extracts the search entry elements
         /// of interest from the HTML document
         /// to be parsed and processed.
@@ -104,6 +96,14 @@ namespace MitchRankChecker.RankChecker.RankCheckers
             task.Wait();
             return task.Result;
         }
+
+        /// <summary>
+        /// Checks for the passed search entry node
+        /// for whether it should have its search
+        /// rank recorded or not.
+        /// </summary>
+        /// <returns>Boolean whether the particular search entry node should have its rank recorded.</returns>
+        protected abstract bool ShouldRecordRank(HtmlNode searchEntryElement);
 
         /// <summary>
         /// Extracts the search entry elements

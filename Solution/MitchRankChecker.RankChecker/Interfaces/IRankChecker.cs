@@ -15,12 +15,12 @@ namespace MitchRankChecker.RankChecker.Interfaces
         /// Extracts the rank entries.
         /// </summary>
         /// <returns>List of Search rank entries.</returns>
-        Task<List<SearchEntry>> ExtractRankEntriesAsync();
-
+        List<SearchEntry> ExtractRankEntries();
+        
         /// <summary>
         /// Extracts the rank entries.
         /// </summary>
         /// <returns>List of Search rank entries.</returns>
-        List<SearchEntry> ExtractRankEntries();
+        Task<List<SearchEntry>> ExtractRankEntriesAsync();
     }
 }
