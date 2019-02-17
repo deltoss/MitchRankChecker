@@ -8,7 +8,7 @@ Inside the `Solution` folder is the various projects, and a solution file to ope
 
 | Project | Purpose | Why? |
 | --- | --- | --- |
-| MitchRankChecker.EntityFramework | A .Net Core Entity Framework project. Contains the database `migration` files. You can run the `dotnet ef` commands against this project. | It's not a good idea to put it inside the web applications, especially if multiple applications uses the same model and database. Separated from the model project to keep it standard and compatible. It's possible to create a .Net Frameworks Entity Framework using that model project to work with older ASP.Net Framework applications. |
+| MitchRankChecker.EntityFramework | A .Net Core Entity Framework project. Contains the database `migration` files. You can run the `dotnet ef` commands against this project. | It's not a good idea to put Entity Framework (EF) inside the web applications, especially if multiple applications uses the same model and database. Thus, EF was separated from the model project to keep it standard and compatible. It's possible to create a .Net Frameworks Entity Framework using that model project to work with older ASP.Net Framework applications. |
 | MitchRankChecker.Model | Models (AKA entities) that maps properties to their corresponding table in the database. | Models are placed as a separate project for modularity purposes and due to multiple projects needing to use the models. |
 | MitchRankChecker.Mvc | The MVC web application, providing the front-end hooking up to the Web API. | To provide the front-end for the user to interact with to perform rank checking. |
 | MitchRankChecker.RankChecker | A `standard class library` that does the actual rank checks. | To keep it decoupled from a single application, it was designed as its own separate class library project. |
@@ -19,12 +19,10 @@ The `.vscode` folder comes with pre-configured files to debug the applications u
 
 # Running the Project
 
-## Running the Application
-
 To run the MVC Application, you need to run the Web API application simultaneously.
 Below are the instructions on how this can be accomplished.
 
-### Visual Studio
+## Visual Studio
 
 1. Open the `/Solution/MitchRankChecker.sln` file with Visual Studio.
 2. Right click on the Solution > Rebuild All
@@ -39,7 +37,7 @@ Below are the instructions on how this can be accomplished.
    
    ![Run the MVC Project](/assets/Running&#32;Mvc&#32;Project.jpg)
 
-### DotNet CLI
+## DotNet CLI
 
 1. Open up `Powershell`.
 2. Change your directory to the Web API project, i.e:
@@ -201,6 +199,13 @@ Note async modifiers and methods were ommitted to reduce size and complexity of 
     * Adds more flexibility for different types of factories to use.
     * Rank checking via scraping is only one way of implementing a rank checker. In the future, rank scraping via other means (e.g. using the `search web API` directly) would be possible. In that situation, it's highly possible that we can have another factory (e.g. `ApiRankCheckerFactory`).
 
+The abstract factory pattern was implemented as such:
+* `ScrapingRankCheckerFactory` inherits from `IRankCheckerFactory`
+* `ScrapingRankCheckerFactory` can create an `IRankChecker` object based on run-time conditions
+    * In this case, the actual deepest class the object inherits from is either `GoogleScrapingRankChecker`, `YahooScrapingRankChecker` or `BingScrapingRankChecker`
+
+The above rules can be shown using the below UML class diagram:
+
 ```plantuml
 @startuml
 interface IRankCheckerFactory {
@@ -209,6 +214,9 @@ interface IRankCheckerFactory {
 
 class ScrapingRankCheckerFactory {
   public IRankChecker CreateRankChecker(...)
+}
+
+interface IRankChecker {
 }
 
 class GoogleScrapingRankChecker {
@@ -221,9 +229,10 @@ class YahooScrapingRankChecker {
 }
 
 IRankCheckerFactory <|-- ScrapingRankCheckerFactory
-ScrapingRankCheckerFactory o.. GoogleScrapingRankChecker
-ScrapingRankCheckerFactory o.. BingScrapingRankChecker
-ScrapingRankCheckerFactory o.. YahooScrapingRankChecker
+ScrapingRankCheckerFactory --o IRankChecker : Creates a
+IRankChecker <|-- GoogleScrapingRankChecker
+IRankChecker <|-- BingScrapingRankChecker
+IRankChecker <|-- YahooScrapingRankChecker
 @enduml
 ```
 
