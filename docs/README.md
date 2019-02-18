@@ -37,41 +37,43 @@ Below are the instructions on how this can be accomplished.
 
 ## Visual Studio
 
-1. Open the `/Solution/MitchRankChecker.sln` file with Visual Studio.
-2. Right click on the Solution > Rebuild All
+1. Go to the main page of this [repository](https://github.com/deltoss/MitchRankChecker), and Clone or download the repository to your desktop.
+2. Open the `<PathToClonedOrDownloadedRepository>/Solution/MitchRankChecker.sln` file with Visual Studio.
+3. Right click on the Solution > Rebuild All
 
    ![Rebuild the Solution](assets/Rebuild&#32;Solution.jpg)
 
-3. Right Click the `MitchRankChecker.WebApi` Project > Debug > Start New Instance
+4. Right Click the `MitchRankChecker.WebApi` Project > Debug > Start New Instance
    
    ![Run the Web API Project](/assets/Running&#32;WebApi&#32;Project.jpg)
 
-4. Right Click the `MitchRankChecker.Mvc` Project > Debug > Start New Instance
+5. Right Click the `MitchRankChecker.Mvc` Project > Debug > Start New Instance
    
    ![Run the MVC Project](/assets/Running&#32;Mvc&#32;Project.jpg)
 
 ## DotNet CLI
 
-1. Open up `Powershell`.
-2. Change your directory to the Web API project, i.e:
+1. Go to the main page of this [repository](https://github.com/deltoss/MitchRankChecker), and Clone or download the repository to your desktop.
+2. Open up `Powershell`.
+3. Change your directory to the Web API project, i.e:
    ```powershell
-   cd <PathToWhereThisReadMeIs>/Solution/MitchRankChecker.WebApi
+   cd <PathToClonedOrDownloadedRepository>/Solution/MitchRankChecker.WebApi
    ```
-3. Run the below command to build the application. This should also implicitly restore any missing packages:
+4. Run the below command to build the application. This should also implicitly restore any missing packages:
    ```powershell
    dotnet build
    ```
-4. Run the below command to host the application:
+5. Run the below command to host the application:
    ```powershell
    dotnet run
    ```
-5. Open up another `Powershell` instance.
-6. Change your directory to the Web MVC project, i.e:
+6. Open up another `Powershell` instance.
+7. Change your directory to the Web MVC project, i.e:
    ```powershell
-   cd <PathToWhereThisReadMeIs>/Solution/MitchRankChecker.Mvc
+   cd <PathToClonedOrDownloadedRepository>/Solution/MitchRankChecker.Mvc
    ```
-7. Repeat steps 3-4 to run the Mvc application.
-8. Navigate to [https://localhost:44306](https://localhost:44306) to try the application.
+8. Repeat steps 3-4 to run the Mvc application.
+9. Navigate to [https://localhost:44306](https://localhost:44306) to try the application.
 
 # Code Documentation
 
