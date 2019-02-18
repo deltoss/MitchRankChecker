@@ -15,15 +15,18 @@ namespace MitchRankChecker.RankChecker.RankCheckers
     /// </summary>
     public class GoogleScrapingRankChecker : ScrapingRankChecker
     {
+        #region Constructors
         /// <summary>
         /// Instantiates a new rank checker.
         /// </summary>
         /// <param name="rankCheckRequest">The model detailing on the rank check information and parameters to configure the rank check.</param>
-        /// <returns></returns>
-        public GoogleScrapingRankChecker(RankCheckRequest rankCheckRequest) : base(rankCheckRequest)
+        /// <param name="client">The HTTP client, used to scrape the data from search engines with.</param>
+        public GoogleScrapingRankChecker(RankCheckRequest rankCheckRequest, HttpClient client) : base(rankCheckRequest, client)
         {
         }
+        #endregion
 
+        #region ScrapingRankChecker Implementations
         /// <inheritdoc/>
         protected override SearchEntry ExtractSearchEntry(HtmlNode searchEntryElement, List<HtmlNode> searchEntryElements)
         {
@@ -41,13 +44,12 @@ namespace MitchRankChecker.RankChecker.RankCheckers
         /// <inheritdoc/>
         public override async Task<List<HtmlNode>> ExtractSearchEntryElementsAsync()
         {
-            HttpClient client = new HttpClient();
             string searchUrl = GetSearchUrl();
-            using (HttpResponseMessage response = await client.GetAsync(searchUrl))
+            using (HttpResponseMessage response = await Client.GetAsync(searchUrl).ConfigureAwait(false))
             {
                 using (HttpContent content = response.Content)
                 {
-                    string result = await content.ReadAsStringAsync();
+                    string result = await content.ReadAsStringAsync().ConfigureAwait(false);
                     HtmlDocument document = new HtmlDocument();
                     document.LoadHtml(result);
 
@@ -67,11 +69,15 @@ namespace MitchRankChecker.RankChecker.RankCheckers
             HtmlNode citeElement = searchEntryElement.SelectSingleNode($"descendant::cite");
             if (citeElement == null)
                 return false;
-            if (!citeElement.InnerText.Contains(RankCheckRequest.WebsiteUrl))
+            string citeText = citeElement.InnerText.ToLower();
+            string websiteUrl = RankCheckRequest.WebsiteUrl.ToLower();
+            if (!citeText.Contains(websiteUrl))
                 return false;
             return true;
         }
+        #endregion
 
+        #region Methods
         /// <summary>
         /// Gets the Search URL based on
         /// the rank check request
@@ -89,5 +95,6 @@ namespace MitchRankChecker.RankChecker.RankCheckers
             uriBuilder.Query = query.ToString();
             return uriBuilder.ToString();
         }
+        #endregion
     }
 }

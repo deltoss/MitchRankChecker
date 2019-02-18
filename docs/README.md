@@ -2,6 +2,18 @@
 [![made-with-docsify](https://img.shields.io/badge/Made%20with-Docsify-green.svg)](https://docsify.js.org/)
 [![made-with-dotnet-core](https://img.shields.io/badge/Made%20with-DotNet%20Core%202.2-blue.svg)](https://shields.io)
 
+# How Does This Work?
+
+As an example application, this doesn't use any Search APIs, and does rank checks through scraping a search engine's [search page](www.google.com/search?q=Online%20Title%20Search).
+
+Once the server receives a rank check request, it spins up a `HttpClient` that would requests and retrieve HTML content from a given URL. We parse and process that HTML using a HTML parsing library (i.e. the de-facto standard `HtmlAgilityPack`) so we can extract the search results.
+
+After extracting a certain amount of search results, we filter them to find which search result would match a given website we want to check the rankings for.
+
+We save the `rank request` information into the database as well as the `website ranks`, so it can be used for data analytic purposes or comparison with the site ranks changes over a period of time.
+
+Note that there are some limitations with this method. First, the results you'd see in your browser won't 100% match up with the results the server extracts from the search engines with the same search term. The reason is because the search engines uses [several variables](https://www.marketmotive.com/blog/discipline-specific/seo/why-search-results-change-between-browsers) to adjust the search results. For example, the **browser cookies** and your **geographic location** would affect your search results.
+
 # Project Structure
 
 Inside the `Solution` folder is the various projects, and a solution file to open those projects for Visual Studio. Below table describes each project and their purpose:

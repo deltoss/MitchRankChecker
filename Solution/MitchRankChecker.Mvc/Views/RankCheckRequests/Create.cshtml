@@ -31,7 +31,6 @@
         var data = $form.serializeArray();
         var jsonData = objectifyForm(data);
 
-        // ToDo Ajax request
         var apiUrl = "@Configuration.GetSection("RankCheckerApi")["url"]/RankCheckRequests";
         var ajaxPromise = $.ajax({
             type: "POST",
@@ -44,8 +43,7 @@
 
         ajaxPromise.then(function () {
             window.location.href = '@(Url.Action("Index", "RankCheckRequests"))';
-        }).fail(function (response) {
-            debugger;
+        }, function (response) {
             if (response.responseJSON && response.responseJSON.errors) {
                 var errors = response.responseJSON.errors;
                 for (var key in errors) {
@@ -57,7 +55,7 @@
                 }
             }
             else
-                $form.find("> .text-danger").text("Not able to reach the Web API.").fadeIn();
+                $form.find("> .text-danger").text("Not able to reach the Web API.").slideDown();
         });
     }
 
@@ -68,6 +66,11 @@
 
     function checkFormValidity(form) {
         var $form = $(form);
+
+        $form.find('input, select, checkbox, radio, textarea, button').each(function () {
+            setFieldError(this, '');
+        })
+
         // Simple quick client-side validation
         var failedClientValidation = false;
 
@@ -136,7 +139,7 @@
                         </div>
                         <div class="form-group">
                             <a href="@(Url.Action("Index", "RankCheckRequests"))" class="btn btn-primary">
-                                <i class="fas fa-plus-circle"></i> Back
+                                <i class="fas fa-arrow-left"></i> Back
                             </a>
                             <button type="button" onclick="submitForm(event, this)" class="btn btn-success">
                                 <i class="fas fa-plus-circle"></i> Create

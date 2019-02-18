@@ -1,0 +1,61 @@
+﻿@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@model int
+
+@{
+    ViewData["Title"] = "Rank Check Results";
+}
+
+<div class="card">
+    <div class="card-body">
+        <div class="text-center">
+            <h1 class="display-4">Rank Check Results</h1>
+        </div>
+
+        <a href="@(Url.Action("Index", "RankCheckRequests"))" class="btn btn-primary mb-3">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+
+        <table id="rankCheckResultsTable" class="table table-bordered" style="width:100%">
+            <thead>
+                <tr>
+                    <th data-priority="1">Rank</th>
+                    <th data-priority="2">Url</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var apiUrl = "@Configuration.GetSection("RankCheckerApi")["url"]/RankCheckRequests/@Model/SearchEntries";
+            $(rankCheckResultsTable).DataTable({
+                ajax: {
+                    url: apiUrl,
+                    dataSrc: ''
+                },
+                "columns": [
+                    {
+                        "data": "rank",
+                        "render": function (data, type, row, meta) {
+                            var trophyHtml = '';
+                            if (data == 1)
+                                trophyHtml = ' <i class="fas fa-trophy" style="color: gold;"></i>';
+                            else if (data == 2)
+                                trophyHtml = ' <i class="fas fa-trophy" style="color: grey;"></i>';
+                            else if (data == 3)
+                                trophyHtml = ' <i class="fas fa-trophy" style="color: saddlebrown;"></i>';
+                            return data + trophyHtml;
+                        }
+                    },
+                    {
+                        "data": "url"
+                    }
+                ],
+                "order": [[ 0, "asc" ]]
+            });
+        });
+    </script>
+}

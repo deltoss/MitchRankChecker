@@ -3,12 +3,13 @@ using Xunit;
 using MitchRankChecker.Model;
 using MitchRankChecker.Model.Enumerations;
 using MitchRankChecker.RankChecker.RankCheckers;
-using MitchRankChecker.RankChecker.Interfaces;
+using MitchRankChecker.RankChecker.Factories;
 using System.Collections.Generic;
+using System.Net.Http;
 
 namespace MitchRankChecker.RankCheckerTest
 {
-    public class RankCheckerUnitTest
+    public class ScrapingRankCheckerUnitTest
     {
         [Fact]
         public void TestGoogleRankChecker()
@@ -24,7 +25,10 @@ namespace MitchRankChecker.RankCheckerTest
                 LastUpdatedAt = DateTime.Now
             };
 
-            IRankChecker rankChecker = new GoogleScrapingRankChecker(rankCheckRequest);
+            IRankCheckerFactory factory = new ScrapingRankCheckerFactory(new HttpClient());
+            IRankChecker rankChecker = factory.CreateRankChecker(rankCheckRequest);
+            Assert.IsAssignableFrom<GoogleScrapingRankChecker>(rankChecker);
+
             List<SearchEntry> entries = rankChecker.ExtractRankEntries();
             Assert.True(entries.Count > 0);
         }
@@ -43,7 +47,10 @@ namespace MitchRankChecker.RankCheckerTest
                 LastUpdatedAt = DateTime.Now
             };
 
-            IRankChecker rankChecker = new BingScrapingRankChecker(rankCheckRequest);
+            IRankCheckerFactory factory = new ScrapingRankCheckerFactory(new HttpClient());
+            IRankChecker rankChecker = factory.CreateRankChecker(rankCheckRequest);
+            Assert.IsAssignableFrom<BingScrapingRankChecker>(rankChecker);
+
             List<SearchEntry> entries = rankChecker.ExtractRankEntries();
             Assert.True(entries.Count > 0);
         }
@@ -62,7 +69,10 @@ namespace MitchRankChecker.RankCheckerTest
                 LastUpdatedAt = DateTime.Now
             };
 
-            IRankChecker rankChecker = new YahooScrapingRankChecker(rankCheckRequest);
+            IRankCheckerFactory factory = new ScrapingRankCheckerFactory(new HttpClient());
+            IRankChecker rankChecker = factory.CreateRankChecker(rankCheckRequest);
+            Assert.IsAssignableFrom<YahooScrapingRankChecker>(rankChecker);
+
             List<SearchEntry> entries = rankChecker.ExtractRankEntries();
             Assert.True(entries.Count > 0);
         }

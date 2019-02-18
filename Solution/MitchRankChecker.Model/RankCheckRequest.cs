@@ -35,7 +35,7 @@ namespace MitchRankChecker.Model
         /// uses the top 100 results.
         /// </summary>
         [Required]
-        [Range(1, int.MaxValue)]
+        [Range(1, 100)]
         public int MaximumRecords { get; set; }
 
         /// <summary>
@@ -80,6 +80,7 @@ namespace MitchRankChecker.Model
         /// <summary>
         /// The associated search rank entries.
         /// </summary>
+        [JsonIgnore]
         public List<SearchEntry> SearchEntries { get; set; }
         
         #region ITrackable Implementation

@@ -45,6 +45,7 @@ namespace MitchRankChecker.Model
         /// <summary>
         /// The associated search rank check request.
         /// </summary>
+        [JsonIgnore]
         public RankCheckRequest RankCheckRequest { get; set; }
         
         #region ITrackable Implementation

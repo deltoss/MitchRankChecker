@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MitchRankChecker.Model;
 
-namespace MitchRankChecker.RankChecker.Interfaces
+namespace MitchRankChecker.RankChecker.RankCheckers
 {
     /// <summary>
     /// Interface to check the website ranks

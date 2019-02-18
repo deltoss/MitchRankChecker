@@ -1,4 +1,7 @@
-﻿@{
+﻿@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
+@{
     ViewData["Title"] = "Rank Check Requests";
 }
 
@@ -8,6 +11,117 @@
             <h1 class="display-4">Rank Check Requests</h1>
         </div>
 
-        <a class="btn btn-success" href="@(Url.Action("Create", "RankCheckRequests"))"><i class="fa-fw fas fa-search"></i> Make Request</a>
+        <div id="rankCheckRequestsAlert" class="alert" style="display: none;"></div>
+
+        <a class="btn btn-success mb-3" href="@(Url.Action("Create", "RankCheckRequests"))"><i class="fa-fw fas fa-search"></i> Make Request</a>
+
+        <table id="rankCheckRequestsTable" class="table table-bordered" style="width:100%">
+            <thead>
+                <tr>
+                    <th data-priority="1">Search Url</th>
+                    <th data-priority="8">Maximum Records</th>
+                    <th data-priority="4">Term to Search</th>
+                    <th data-priority="5">Website Url</th>
+                    <th data-priority="6">Status</th>
+                    <th data-priority="7">Error Message</th>
+                    <th data-priority="2">Requested On</th>
+                    <th data-priority="3">Actions</th>
+                </tr>
+            </thead>
+        </table>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        var apiUrl = "@Configuration.GetSection("RankCheckerApi")["url"]/RankCheckRequests";
+        var resultUrlTemplate = "@(Url.Action("Index", "RankCheckRequestSearchEntries", new { rankCheckRequestId = "--RANKCHECKREQUESTID--" }))";
+
+        function confirmDeleteRow(rankCheckRequestId) {
+            if (!confirm('Delete this record?'))
+                return false;
+
+            $(rankCheckRequestsAlert).slideUp();
+
+            var ajaxPromise = $.ajax({
+                type: "DELETE",
+                url: apiUrl + '/' + rankCheckRequestId
+            });
+            ajaxPromise.then(function (result) {
+                $(rankCheckRequestsAlert)
+                    .fadeIn()
+                    .removeClass("alert-danger")
+                    .addClass('alert-success')
+                    .text('Successful deleted the record.');
+                $(rankCheckRequestsTable).DataTable().ajax.reload();
+            }, function () {
+                $(rankCheckRequestsAlert)
+                    .fadeIn()
+                    .removeClass("alert-success")
+                    .addClass('alert-danger')
+                    .text('Failed to delete the record.');
+            }).always(function () {
+                setTimeout(function () {
+                    $(rankCheckRequestsAlert).slideUp();
+                }, 5000);
+            });
+            return true;
+        }
+
+        $(document).ready(function () {
+            $(rankCheckRequestsTable).DataTable({
+                ajax: {
+                    url: apiUrl,
+                    dataSrc: ''
+                },
+                "columns": [
+                    {
+                        "data": "searchUrl"
+                    },
+                    {
+                        "data": "maximumRecords"
+                    },
+                    {
+                        "data": "termToSearch"
+                    },
+                    {
+                        "data": "websiteUrl"
+                    },
+                    {
+                        "data": "status",
+                        "render": function (data, type, row, meta) {
+                            if (!data || !data.name)
+                                return ''
+                            return data.name;
+                        }
+                    },
+                    {
+                        "data": "errorMessage"
+                    },
+                    {
+                        "data": "createdAt",
+                        "render": function (data, type, row, meta) {
+                            if (!data)
+                                return ''
+                            return moment.utc(data).local().format('llll');
+                        }
+                    },
+                    {
+                        "data": null,
+                        "render": function (data, type, row, meta) {
+                            var resultUrl = resultUrlTemplate.replace('--RANKCHECKREQUESTID--', data.id);
+                            var resultButtonHtml = '<a class="btn btn-info btn-sm" href="' + resultUrl + '"><i class="fa-fw fas fa-poll"></i> Results</a>';
+                            var deleteButtonHtml = '';
+                            if (data.status && data.status.name != 'InProgress')
+                                deleteButtonHtml = '<button class="btn btn-danger btn-sm" onclick="return confirmDeleteRow(' + data.id + ')"><i class="fa-fw fas fa-trash-alt"></i> Delete</button>';
+                            return '<div style="white-space: nowrap;">' + resultButtonHtml + ' ' + deleteButtonHtml + '</div>';
+                        },
+                        "orderable": false,
+                        "searchable": false
+                    }
+                ],
+                "order": [[ 6, "desc" ]]
+            });
+        });
+    </script>
+}

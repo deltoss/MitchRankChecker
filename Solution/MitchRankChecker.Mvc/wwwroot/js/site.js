@@ -13,6 +13,15 @@ $.extend(true, $.fn.dataTable.defaults, {
     ],
     buttons: [
         {
+            text: '<i class="fas fa-sync-alt"></i>',
+            action: function (e, dt, node, config) {
+                dt.ajax.reload();
+            },
+            titleAttr: function (dt) {
+                return dt.i18n('buttons.refresh', 'Refresh');
+            },
+        },
+        {
             extend: 'copy',
             text: '<i class="fa-fw fas fa-copy"></i>',
             titleAttr: function (dt) {
@@ -116,4 +125,16 @@ $.extend(true, $.fn.dataTable.defaults, {
             ]
         },
     ]
+});
+
+// So that pace js also intercepts all DataTables
+// AJAX requests to show the pace js loader
+$(document).on('processing.dt', function (e, settings, processing) {
+    if (!Pace)
+        return;
+    if (processing) {
+        Pace.start();
+    } else {
+        Pace.stop();
+    }
 });

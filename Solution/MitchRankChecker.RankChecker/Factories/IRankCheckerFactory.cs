@@ -1,6 +1,7 @@
 using MitchRankChecker.Model;
+using MitchRankChecker.RankChecker.RankCheckers;
 
-namespace MitchRankChecker.RankChecker.Interfaces
+namespace MitchRankChecker.RankChecker.Factories
 {
     /// <summary>
     /// Interface to create a Rank

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -11,12 +12,14 @@ namespace HostedServiceBackgroundTasks
     public class QueuedHostedService : BackgroundService
     {
         private readonly ILogger _logger;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
 
         public QueuedHostedService(IBackgroundTaskQueue taskQueue,
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory, IServiceScopeFactory serviceScopeFactory)
         {
             TaskQueue = taskQueue;
             _logger = loggerFactory.CreateLogger<QueuedHostedService>();
+            _serviceScopeFactory = serviceScopeFactory;
         }
 
         public IBackgroundTaskQueue TaskQueue { get; }
@@ -32,7 +35,10 @@ namespace HostedServiceBackgroundTasks
 
                 try
                 {
-                    await workItem(cancellationToken);
+                    using (var scope = _serviceScopeFactory.CreateScope())
+                    {
+                        await workItem(cancellationToken, scope.ServiceProvider);
+                    }
                 }
                 catch (Exception ex)
                 {

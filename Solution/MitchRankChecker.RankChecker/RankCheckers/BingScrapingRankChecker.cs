@@ -20,15 +20,18 @@ namespace MitchRankChecker.RankChecker.RankCheckers
         /// </summary>
         protected int _pageSize = 10;
 
+        #region Constructors
         /// <summary>
         /// Instantiates a new rank checker.
         /// </summary>
         /// <param name="rankCheckRequest">The model detailing on the rank check information and parameters to configure the rank check.</param>
-        /// <returns></returns>
-        public BingScrapingRankChecker(RankCheckRequest rankCheckRequest) : base(rankCheckRequest)
+        /// <param name="client">The HTTP client, used to scrape the data from search engines with.</param>
+        public BingScrapingRankChecker(RankCheckRequest rankCheckRequest, HttpClient client) : base(rankCheckRequest, client)
         {
         }
+        #endregion
 
+        #region ScrapingRankChecker Implementations
         /// <inheritdoc/>
         protected override SearchEntry ExtractSearchEntry(HtmlNode searchEntryElement, List<HtmlNode> searchEntryElements)
         {
@@ -48,33 +51,16 @@ namespace MitchRankChecker.RankChecker.RankCheckers
         {
             var searchEntryElements = new List<HtmlNode>();
             int currentPage = 1;
-            HtmlNodeCollection htmlNodes = await GetResultsFromPageAsync(currentPage);
+            HtmlNodeCollection htmlNodes = await GetResultsFromPageAsync(currentPage).ConfigureAwait(false);
             while (htmlNodes != null && htmlNodes.Count > 0 && searchEntryElements.Count < RankCheckRequest.MaximumRecords)
             {
                 searchEntryElements.AddRange(htmlNodes);
-                htmlNodes = await GetResultsFromPageAsync(++currentPage);
+                htmlNodes = await GetResultsFromPageAsync(++currentPage).ConfigureAwait(false);
             }
 
             if (searchEntryElements.Count > RankCheckRequest.MaximumRecords)
                 searchEntryElements.RemoveRange(RankCheckRequest.MaximumRecords - 1, searchEntryElements.Count - RankCheckRequest.MaximumRecords);
             return searchEntryElements;
-        }
-
-        private async Task<HtmlNodeCollection> GetResultsFromPageAsync(int currentPage)
-        {
-            string searchUrl = GetSearchUrl(currentPage);
-            HttpClient client = new HttpClient();
-            using (HttpResponseMessage response = await client.GetAsync(searchUrl))
-            {
-                using (HttpContent content = response.Content)
-                {
-                    string result = await content.ReadAsStringAsync();
-                    HtmlDocument document = new HtmlDocument();
-                    document.LoadHtml(result);
-
-                    return document.DocumentNode.SelectNodes($"//*[@id='b_results'][1]//*[@class='b_algo']//descendant::cite[1]//ancestor::*[@class='b_algo'][1]");
-                }
-            }
         }
 
         /// <inheritdoc/>
@@ -83,9 +69,29 @@ namespace MitchRankChecker.RankChecker.RankCheckers
             HtmlNode citeElement = searchEntryElement.SelectSingleNode($"descendant::cite");
             if (citeElement == null)
                 return false;
-            if (!citeElement.InnerText.Contains(RankCheckRequest.WebsiteUrl))
+            string citeText = citeElement.InnerText.ToLower();
+            string websiteUrl = RankCheckRequest.WebsiteUrl.ToLower();
+            if (!citeText.Contains(websiteUrl))
                 return false;
             return true;
+        }
+        #endregion
+
+        #region Methods
+        private async Task<HtmlNodeCollection> GetResultsFromPageAsync(int currentPage)
+        {
+            string searchUrl = GetSearchUrl(currentPage);
+            using (HttpResponseMessage response = await Client.GetAsync(searchUrl).ConfigureAwait(false))
+            {
+                using (HttpContent content = response.Content)
+                {
+                    string result = await content.ReadAsStringAsync().ConfigureAwait(false);
+                    HtmlDocument document = new HtmlDocument();
+                    document.LoadHtml(result);
+
+                    return document.DocumentNode.SelectNodes($"//*[@id='b_results'][1]//*[@class='b_algo']//descendant::cite[1]//ancestor::*[@class='b_algo'][1]");
+                }
+            }
         }
 
         /// <summary>
@@ -109,5 +115,6 @@ namespace MitchRankChecker.RankChecker.RankCheckers
             uriBuilder.Query = query.ToString();
             return uriBuilder.ToString();
         }
+        #endregion
     }
 }

@@ -17,6 +17,7 @@ using Microsoft.EntityFrameworkCore;
 using MitchRankChecker.EntityFramework;
 using Swashbuckle.AspNetCore.Swagger;
 using HostedServiceBackgroundTasks;
+using MitchRankChecker.RankChecker.Factories;
 
 namespace MitchRankChecker.WebApi
 {
@@ -57,6 +58,7 @@ namespace MitchRankChecker.WebApi
 
             services.AddHostedService<QueuedHostedService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+            services.AddHttpClient<IRankCheckerFactory, ScrapingRankCheckerFactory>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -73,8 +75,9 @@ namespace MitchRankChecker.WebApi
             }
 
             app.UseCors(builder =>
-                builder.WithOrigins("*")
+                builder.AllowAnyOrigin()
                     .AllowAnyHeader()
+                    .AllowAnyMethod()
                 );
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
