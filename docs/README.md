@@ -72,7 +72,7 @@ Below are the instructions on how this can be accomplished.
    ```powershell
    cd <PathToClonedOrDownloadedRepository>/Solution/MitchRankChecker.Mvc
    ```
-8. Repeat steps 3-4 to run the Mvc application.
+8. Repeat steps 4-5 to run the Mvc application.
 9. Navigate to [https://localhost:44306](https://localhost:44306) to try the application.
 
 # Code Documentation
