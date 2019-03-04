@@ -1,0 +1,22 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: microsoft/aspnetcore-build:2.0
+    steps:
+      # Checks out source code, i.e. grabs the public
+      # source code and puts it into the docker image
+      - checkout
+      # Change directory back to parent, then echo
+      # the current directory
+      - run: cd '../' && echo $PWD
+      # Note that for each command, the directory
+      # is reset, meaning the below would give
+      # exactly the same output as above.
+      - run: cd '../' && echo $PWD
+      #  Restore Dotnet Packages
+      - run: cd ./Solution/MitchRankChecker.RankCheckerTest && dotnet restore
+      # Compile and build the application
+      - run: cd ./Solution/MitchRankChecker.RankCheckerTest && dotnet build
+      # Test the application
+      - run: cd ./Solution/MitchRankChecker.RankCheckerTest && dotnet test --no-build
