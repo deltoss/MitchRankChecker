@@ -16,11 +16,6 @@ namespace MitchRankChecker.EntityFramework
         public DbSet<SearchEntry> SearchEntries { get; set; }
         public DbSet<RankCheckRequest> RankCheckRequests { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder builder)
-        {
-            base.OnModelCreating(builder);
-        }
-
         public override Task<int> SaveChangesAsync(bool acceptAllChangesonSuccess, CancellationToken cancellationToken = default(CancellationToken))
         {
             UpdateTrackingColumns();
