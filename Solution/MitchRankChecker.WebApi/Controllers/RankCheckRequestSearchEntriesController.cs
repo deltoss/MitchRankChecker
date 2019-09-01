@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MitchRankChecker.EntityFramework;
 using MitchRankChecker.Model;
+using MitchRankChecker.WebApi.Services;
 
 namespace MitchRankChecker.WebApi.Controllers
 {
@@ -18,24 +15,20 @@ namespace MitchRankChecker.WebApi.Controllers
     [ApiController]
     public class RankCheckRequestSearchEntriesController : ControllerBase
     {
-        /// <summary>
-        /// The Entity Framework database context
-        /// to manipulate the database with.
-        /// </summary>
-        private readonly RankCheckerDbContext _context;
+        private readonly IRankCheckService _rankCheckService;
 
         /// <summary>
         /// Constructor that instantiates a new controller.
         /// </summary>
-        /// <param name="context">The Entity framework database context.</param>
-        public RankCheckRequestSearchEntriesController(RankCheckerDbContext context)
+        /// <param name="rankCheckService">Service that performs the rank checking logic.</param>
+        public RankCheckRequestSearchEntriesController(IRankCheckService rankCheckService)
         {
-            _context = context;
+            _rankCheckService = rankCheckService;
         }
 
         // GET: api/RankCheckRequests/{rankCheckRequestId:int}/SearchEntries
         /// <summary>
-        /// Gets a rank check request object given an ID.
+        /// Gets search entries for a given rank check request.
         /// </summary>
         /// <param name="rankCheckRequestId">The id of the rank check request to get search entries for.</param>
         /// <remarks>
@@ -44,32 +37,22 @@ namespace MitchRankChecker.WebApi.Controllers
         ///     GET api/RankCheckRequests/1/SearchEntries
         ///
         /// </remarks>
-        /// <returns>The rank check request item.</returns>
-        /// <response code="200">Returns the rank check request item</response>
-        /// <response code="404">If the item is not found</response>
+        /// <returns>The search entries for a given rank check request.</returns>
+        /// <response code="200">Returns the search entries for a given rank check request.</response>
+        /// <response code="404">If the rank check request is not found</response>
         [HttpGet("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SearchEntry>>> GetRankCheckRequestSearchEntries(int rankCheckRequestId)
         {
-            var rankCheckRequest = await _context.RankCheckRequests.FindAsync(rankCheckRequestId);
+            RankCheckRequest rankCheckRequest = await _rankCheckService.GetRankCheckRequestAsync(rankCheckRequestId);
             if (rankCheckRequest == null)
             {
                 return NotFound();
             }
             
-            return await _context.SearchEntries.Where(x => x.RankCheckRequestId == rankCheckRequestId).ToListAsync();
-        }
-
-        /// <summary>
-        /// Checks if a rank check request exists in the database.
-        /// </summary>
-        /// <param name="id">The rank check request to check if it exists in database.</param>
-        /// <returns>True if it exists, false otherwise</returns>
-        private bool RankCheckRequestExists(int id)
-        {
-            return _context.RankCheckRequests.Any(e => e.Id == id);
+            return (await _rankCheckService.GetSearchEntriesAsync(rankCheckRequestId)).ToList();
         }
     }
 }

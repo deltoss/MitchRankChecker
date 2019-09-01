@@ -3,6 +3,12 @@
 [![made-with-docsify](https://img.shields.io/badge/Made%20with-Docsify-green.svg)](https://docsify.js.org/)
 [![made-with-dotnet-core](https://img.shields.io/badge/Made%20with-DotNet%20Core%202.2-blue.svg)](https://shields.io)
 
+# Important!!!
+
+Note that the search engines may change their page structure from time-to-time, causing this example to break. There's nothing that can be done as this example is designed to scrape the results from the search engines pages, rather then their API directly.
+
+Thus, if you want this example to work, you may need to update the scraping logic for the rank checker classes `BingScrapingRankChecker`, `GoogleScrapingRankChecker` or `YahooScrapingRankChecker`.
+
 # Introduction
 
 An example .Net project that does a rank check for websites against a specific search term.
@@ -23,7 +29,10 @@ For cross-platform compatibility, this application was developed using the `DotN
     * Bing
 * History of Rank Check Requests
 * Background Jobs
-    * Rank searching is as a background job, as the rank check process can take some amount of time.
+    * Rank searching executes as a background job.
+    * Why?
+        * The rank check may take a long time, depending on the user's query
+        * User can make multiple rank check requests without waiting.
 * Automated Unit Tests
 
 # Documentation

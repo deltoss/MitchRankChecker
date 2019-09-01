@@ -18,6 +18,7 @@ using MitchRankChecker.EntityFramework;
 using Swashbuckle.AspNetCore.Swagger;
 using HostedServiceBackgroundTasks;
 using MitchRankChecker.RankChecker.Factories;
+using MitchRankChecker.WebApi.Services;
 
 namespace MitchRankChecker.WebApi
 {
@@ -59,6 +60,7 @@ namespace MitchRankChecker.WebApi
             services.AddHostedService<QueuedHostedService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.AddHttpClient<IRankCheckerFactory, ScrapingRankCheckerFactory>();
+            services.AddScoped<IRankCheckService, RankCheckService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

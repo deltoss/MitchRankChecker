@@ -2,15 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using HostedServiceBackgroundTasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using MitchRankChecker.EntityFramework;
 using MitchRankChecker.Model;
-using MitchRankChecker.Model.Enumerations;
-using MitchRankChecker.RankChecker.Factories;
-using MitchRankChecker.RankChecker.RankCheckers;
+using MitchRankChecker.WebApi.Services;
 
 namespace MitchRankChecker.WebApi.Controllers
 {
@@ -22,26 +16,15 @@ namespace MitchRankChecker.WebApi.Controllers
     [ApiController]
     public class RankCheckRequestsController : ControllerBase
     {
-        /// <summary>
-        /// The Entity Framework database context
-        /// to manipulate the database with.
-        /// </summary>
-        private readonly RankCheckerDbContext _context;
-
-        /// <summary>
-        /// The queue to assign background services into.
-        /// </summary>
-        private IBackgroundTaskQueue _queue;
+        private readonly IRankCheckService _rankCheckService;
 
         /// <summary>
         /// Constructor that instantiates a new controller.
         /// </summary>
-        /// <param name="context">The Entity framework database context.</param>
-        /// <param name="queue">The background job processing queue</param>
-        public RankCheckRequestsController(RankCheckerDbContext context, IBackgroundTaskQueue queue)
+        /// <param name="rankCheckService">Service that performs the rank checking logic.</param>
+        public RankCheckRequestsController(IRankCheckService rankCheckService)
         {
-            _context = context;
-            _queue = queue;
+            _rankCheckService = rankCheckService;
         }
 
         /// <summary>
@@ -59,7 +42,7 @@ namespace MitchRankChecker.WebApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RankCheckRequest>>> GetSearchRankChecks()
         {
-            return await _context.RankCheckRequests.ToListAsync();
+            return (await _rankCheckService.GetRankCheckRequestsAsync()).ToList();
         }
 
         /// <summary>
@@ -80,7 +63,7 @@ namespace MitchRankChecker.WebApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<RankCheckRequest>> GetRankCheckRequest(int id)
         {
-            var rankCheckRequest = await _context.RankCheckRequests.FindAsync(id);
+            var rankCheckRequest = await _rankCheckService.GetRankCheckRequestAsync(id);
 
             if (rankCheckRequest == null)
             {
@@ -111,44 +94,7 @@ namespace MitchRankChecker.WebApi.Controllers
         [HttpPost]
         public async Task<ActionResult<RankCheckRequest>> PostRankCheckRequest(RankCheckRequest rankCheckRequest)
         {
-            rankCheckRequest.Status = RankCheckRequestStatus.InQueue;
-            _context.RankCheckRequests.Add(rankCheckRequest);
-            await _context.SaveChangesAsync();
-
-            _queue.QueueBackgroundWorkItem(async (token, provider) =>
-            {
-                RankCheckRequest updatedRankCheckRequest;
-                var context = provider.GetService<RankCheckerDbContext>();
-
-                updatedRankCheckRequest = await context.RankCheckRequests.Where(x => x.Id == rankCheckRequest.Id).FirstAsync();
-                updatedRankCheckRequest.Status = RankCheckRequestStatus.InProgress;
-                context.Attach(updatedRankCheckRequest);
-                context.Entry(updatedRankCheckRequest).Property(x => x.StatusId).IsModified = true; // Mark the specific field as modified to only update that field
-                await context.SaveChangesAsync();
-                try
-                {
-                    var scrapingRankCheckerFactory = provider.GetService<IRankCheckerFactory>();
-                    IRankChecker rankChecker = scrapingRankCheckerFactory.CreateRankChecker(updatedRankCheckRequest);
-                    List<SearchEntry> relevantSearchEntries = await rankChecker.ExtractRankEntriesAsync();
-                    if (relevantSearchEntries != null && relevantSearchEntries.Count > 0)
-                        await context.SearchEntries.AddRangeAsync(relevantSearchEntries);
-
-                    updatedRankCheckRequest.Status = RankCheckRequestStatus.Completed;
-                    context.Attach(updatedRankCheckRequest);
-                    context.Entry(updatedRankCheckRequest).Property(x => x.StatusId).IsModified = true;
-                    await context.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    updatedRankCheckRequest.Status = RankCheckRequestStatus.Error;
-                    updatedRankCheckRequest.ErrorMessage = ex.Message;
-                    context.Attach(updatedRankCheckRequest);
-                    context.Entry(updatedRankCheckRequest).Property(x => x.StatusId).IsModified = true;
-                    context.Entry(updatedRankCheckRequest).Property(x => x.ErrorMessage).IsModified = true;
-                    await context.SaveChangesAsync();
-                }
-            });
-
+            RankCheckRequest persistedRankCheckRequest = await _rankCheckService.QueueRankCheckRequestAsync(rankCheckRequest);
             return CreatedAtAction("GetRankCheckRequest", new { id = rankCheckRequest.Id }, rankCheckRequest);
         }
 
@@ -170,31 +116,17 @@ namespace MitchRankChecker.WebApi.Controllers
         [ProducesResponseType(404)]
         [ProducesResponseType(406)]
         [HttpDelete("{id}")]
-        public async Task<ActionResult<RankCheckRequest>> DeleteRankCheckRequest(int id)
+        public async Task<ActionResult<bool>> DeleteRankCheckRequest(int id)
         {
-            var rankCheckRequest = await _context.RankCheckRequests.FindAsync(id);
-            if (rankCheckRequest == null)
-            {
+            try {
+                return await _rankCheckService.DeleteRankCheckRequestAsync(id);
+            }
+            catch (KeyNotFoundException) {
                 return NotFound();
             }
-
-            if (rankCheckRequest.Status == RankCheckRequestStatus.InProgress)
+            catch (NotSupportedException) {
                 return StatusCode(406);
-
-            _context.RankCheckRequests.Remove(rankCheckRequest);
-            await _context.SaveChangesAsync();
-
-            return rankCheckRequest;
-        }
-
-        /// <summary>
-        /// Checks if a rank check request exists in the database.
-        /// </summary>
-        /// <param name="id">The rank check request to check if it exists in database.</param>
-        /// <returns>True if it exists, false otherwise</returns>
-        private bool RankCheckRequestExists(int id)
-        {
-            return _context.RankCheckRequests.Any(e => e.Id == id);
+            }
         }
     }
 }
