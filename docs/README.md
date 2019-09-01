@@ -269,4 +269,5 @@ Although popular, the controversial `Repository` pattern was not applied, for be
     * The fundamental concept of `HATEOAS` wasn't implemented for the API.
     * Authentication and authorisation wasn't implemented, due to the amount of effort to implement a proper authentication system that allows for managing users, roles, permissions, and/or claims.
     * No complicated NPM and Webpack installation. Instead, used `LibMan`, which is Microsofts package manager. Easier to setup, but for complicated use cases, NPM and webpack is the better approach.
-    * Client-side framework (i.e. VueJS, react, Angular) was not used, as it'd also require NPM and webpack for an optimal set up, taking time.
+    * Client-side framework (i.e. VueJS, React, Angular) was not used, as it'd also require NPM and webpack for an optimal set up, taking time.
+    * The background job processor is just a static singleton at this point. Meaning it's not scalable, or has that many features. For real use, you'd use a more complicated background processing framework such as Quartz or HangFire.
